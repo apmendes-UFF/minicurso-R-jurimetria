@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.32">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Alexandre Pinto Mendes">
+
+<title>Minicurso de R para Aplicações Jurimétricas</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Aula 02_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Aula 02_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Aula 02_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Aula 02_files/libs/quarto-html/popper.min.js"></script>
+<script src="Aula 02_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Aula 02_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Aula 02_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Aula 02_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Aula 02_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Aula 02_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Aula 02_files/libs/bootstrap/bootstrap-bb462d781dde1847d9e3ccf7736099dd.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Minicurso de R para Aplicações Jurimétricas</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Alexandre Pinto Mendes </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="trabalhando-com-dados-reais" class="level1">
+<h1>2. Trabalhando com Dados Reais</h1>
+<section id="importando-dados-no-r" class="level2">
+<h2 class="anchored" data-anchor-id="importando-dados-no-r">1. Importando Dados no R</h2>
+<div style="text-align:justify">
+<p>Embora existam métodos para requisitar diretamente dados de páginas da internet usando o R, neste momento, vamos fazer o download direto da base de dados sobre ocorrências criminais do Estado do Rio de Janeiro no site do Instituto de Segurança Pública:</p>
+<p><a href="https://www.ispdados.rj.gov.br/Arquivos/DOMensalEstadoDesde1991.csv" class="uri">https://www.ispdados.rj.gov.br/Arquivos/DOMensalEstadoDesde1991.csv</a></p>
+<p>Feito o download, copiem e colem a planilha na pasta do projeto criado por vocês. Isso permite chamar o nome do arquivo sem ter que indicar sua localização completa na memória do computador. Se tiverem curiosidade, abram esse mesmo arquivo no Excel, pode ser ilustrativo.</p>
+<p>Antes de iniciar essa nova sessão de trabalho, vamos chamar novamente a biblioteca do tidyverse para manipular os dados. A seguir, usamos a função read.csv( ) para ler o arquivo no R.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.2     ✔ tibble    3.2.1
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.0.4     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Importando os dados para o R</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>crimes<span class="ot">&lt;-</span><span class="fu">read.csv</span>(<span class="st">"DOMensalEstadoDesde1991.csv"</span>, <span class="co">#nome do arquivo já na pasta do projeto</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">sep=</span><span class="st">";"</span>,                       <span class="co">#forma de separação dos dados no csv</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">header=</span><span class="cn">TRUE</span>)                   <span class="co">#mantém os títulos das colunas</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div style="text-align: justify">
+<p>Agora o nosso objeto crimes já aparece no environment com o conteúdo do arquivo. Podemos digitar em nosso script view(crimes) ou simplemente clicar no ícone do envoriment e teremos uma visualização dos dados fornecida pelo próprio R.</p>
+<p>Ao abrir a planilha, vemos que se trata de uma série histórica com ano, mês e registros de ocorrência de crimes e atividade policial (para o dicionário completo acessar: <a href="https://www.ispdados.rj.gov.br/Arquivos/DicionarioVariaveisDOMensalEstadoDesde1991.xlsx" class="uri">https://www.ispdados.rj.gov.br/Arquivos/DicionarioVariaveisDOMensalEstadoDesde1991.xlsx</a>).</p>
+<p>Também observamos valores faltantes, ou NAs. Vamos ter que lidar com isso para analisar os dados. Antes, porém, vamos usar os comandos de verificação da classe de dados. Não precisamos usar dim( ), pois o próprio environment já diz que se trata de um data frame com 427 linhas (obs.) e 58 colunas (variáveis).</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(crimes) <span class="co">#O R está lendo como 'integer' - números inteiros, todas as  colunas</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   427 obs. of  58 variables:
+ $ ano                       : int  1991 1991 1991 1991 1991 1991 1991 1991 1991 1991 ...
+ $ mes                       : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ hom_doloso                : int  657 732 713 634 650 647 558 557 542 613 ...
+ $ lesao_corp_morte          : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ latrocinio                : int  15 17 25 20 20 14 14 11 19 21 ...
+ $ cvli                      : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ hom_por_interv_policial   : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ feminicidio               : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ letalidade_violenta       : int  672 749 738 654 670 661 572 568 561 634 ...
+ $ tentat_hom                : int  162 175 216 200 146 201 201 209 146 200 ...
+ $ tentativa_feminicidio     : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ lesao_corp_dolosa         : int  3051 3421 3613 3211 3051 2977 2784 3134 3026 3482 ...
+ $ estupro                   : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ hom_culposo               : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ lesao_corp_culposa        : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ roubo_transeunte          : int  967 963 963 1186 931 831 797 813 805 834 ...
+ $ roubo_celular             : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ roubo_em_coletivo         : int  381 432 422 354 335 342 308 299 281 328 ...
+ $ roubo_rua                 : int  1348 1395 1385 1540 1266 1173 1105 1112 1086 1162 ...
+ $ roubo_veiculo             : int  1174 1097 1265 1415 1449 1354 1365 1347 1353 1470 ...
+ $ roubo_carga               : int  63 64 71 81 82 82 82 71 91 83 ...
+ $ roubo_comercio            : int  350 357 443 425 553 518 496 498 473 561 ...
+ $ roubo_residencia          : int  188 171 191 199 231 178 186 189 199 228 ...
+ $ roubo_banco               : int  37 35 43 36 27 37 25 29 12 16 ...
+ $ roubo_cx_eletronico       : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ roubo_conducao_saque      : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ roubo_apos_saque          : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ roubo_bicicleta           : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ outros_roubos             : int  158 142 131 112 147 81 94 88 90 107 ...
+ $ total_roubos              : int  3318 3261 3529 3808 3755 3423 3353 3334 3304 3627 ...
+ $ furto_veiculos            : int  2009 1850 2084 2085 2185 1992 1978 1835 1993 1999 ...
+ $ furto_transeunte          : int  1147 1066 1062 1195 723 673 700 794 810 862 ...
+ $ furto_coletivo            : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ furto_celular             : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ furto_bicicleta           : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ outros_furtos             : int  3561 3309 3573 3290 3546 3519 3604 3641 3460 3621 ...
+ $ total_furtos              : int  6717 6225 6719 6570 6454 6184 6282 6270 6263 6482 ...
+ $ sequestro                 : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ extorsao                  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ sequestro_relampago       : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ estelionato               : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ apreensao_drogas          : int  133 127 80 133 163 157 203 215 179 184 ...
+ $ posse_drogas              : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ trafico_drogas            : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ apreensao_drogas_sem_autor: int  NA NA NA NA NA NA NA NA NA NA ...
+ $ recuperacao_veiculos      : int  872 751 789 787 845 802 870 809 756 818 ...
+ $ apf                       : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ aaapai                    : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ cmp                       : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ cmba                      : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ ameaca                    : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ pessoas_desaparecidas     : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ encontro_cadaver          : int  217 209 188 140 78 111 126 79 71 95 ...
+ $ encontro_ossada           : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ pol_militares_mortos_serv : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ pol_civis_mortos_serv     : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ registro_ocorrencias      : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ fase                      : int  3 3 3 3 3 3 3 3 3 3 ...</code></pre>
+</div>
+</div>
+</section>
+<section id="modos-de-resumir-e-visualizar-os-dados" class="level2">
+<h2 class="anchored" data-anchor-id="modos-de-resumir-e-visualizar-os-dados">2. Modos de Resumir e Visualizar os Dados</h2>
+<div style="text-align: justify">
+<p>Vimos pela própria saída de str( ) que há vários valores faltantes, o que significa que para algumas das variáveis o registro é posterior ao início da série em 1991. Vamos tentar ver quais crimes e quantos NA temos usando um método para contar frequências, a função table( ) do R base.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Verificando NAS</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>nas <span class="ot">&lt;-</span> <span class="fu">colSums</span>(<span class="fu">is.na</span>(crimes[, <span class="dv">3</span><span class="sc">:</span><span class="dv">58</span>])) <span class="co">#soma, coluna a coluna, quantos nas</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>nas</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                hom_doloso           lesao_corp_morte 
+                         0                         96 
+                latrocinio                       cvli 
+                         0                         96 
+   hom_por_interv_policial                feminicidio 
+                        84                        405 
+       letalidade_violenta                 tentat_hom 
+                         0                          0 
+     tentativa_feminicidio          lesao_corp_dolosa 
+                       405                          0 
+                   estupro                hom_culposo 
+                       144                         84 
+        lesao_corp_culposa           roubo_transeunte 
+                        96                          0 
+             roubo_celular          roubo_em_coletivo 
+                       108                          0 
+                 roubo_rua              roubo_veiculo 
+                         0                          0 
+               roubo_carga             roubo_comercio 
+                         0                          0 
+          roubo_residencia                roubo_banco 
+                         0                          0 
+       roubo_cx_eletronico       roubo_conducao_saque 
+                       144                        144 
+          roubo_apos_saque            roubo_bicicleta 
+                       144                        276 
+             outros_roubos               total_roubos 
+                         0                          0 
+            furto_veiculos           furto_transeunte 
+                         0                          0 
+            furto_coletivo              furto_celular 
+                       144                        144 
+           furto_bicicleta              outros_furtos 
+                       276                          0 
+              total_furtos                  sequestro 
+                         0                         96 
+                  extorsao        sequestro_relampago 
+                       144                        144 
+               estelionato           apreensao_drogas 
+                       144                          0 
+              posse_drogas             trafico_drogas 
+                       180                        180 
+apreensao_drogas_sem_autor       recuperacao_veiculos 
+                       180                          0 
+                       apf                     aaapai 
+                       180                        180 
+                       cmp                       cmba 
+                       180                        180 
+                    ameaca      pessoas_desaparecidas 
+                        96                        132 
+          encontro_cadaver            encontro_ossada 
+                         0                        132 
+ pol_militares_mortos_serv      pol_civis_mortos_serv 
+                       144                        144 
+      registro_ocorrencias                       fase 
+                        96                          0 </code></pre>
+</div>
+</div>
+<div style="text-align: justify">
+<p>O resultado dessa simples operação mostra que alguns crimes passaram a ser contabilizados depois de outros, seja porque o Estado não os incorporou à base de dados por decisão política, seja porque surgiram novos tipos penais, como o caso do feminicídio e tentativa de feminicídio.</p>
+<p>De qualquer forma, precisamos pensar sobre o que fazer com os valores faltantes. Essa é uma tomada decisão que extrapola o âmbito da programação: por exemplo, não faz sentido preecher as caselas vazias com o valor 0, embora um simples comando pudesse fazê-lo. Porque isso poderia conduzir a falsa intepretação de que no mês e ano em questão houve zero registros, que é diferente de não ser sequer contabilizado o crime. Além disso, para fazer medidas de resumo, o valor 0 em várias observações interferiria na média, na mediana e outras medidas.</p>
+<p>Vamos mostrar como lidar com isso no R base e no Tidy, caso queiramos trabalhar com as medidas-resumo. Vamos dizer que gostaríamos de saber as medidas principais relativas ao crime de homicídio por intervenção policial nesta série. Pelo resultado anterior, vemos que este crime tem 84 entradas a menos. Vamos criar um objeto para separar do conjunto maior, pegando apenas as linhas que não são NA.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Comando do R BASE para separar letalidade policial sem NAs</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>letalidadepolicial <span class="ot">&lt;-</span> crimes<span class="sc">$</span>hom_por_interv_policial[<span class="sc">!</span><span class="fu">is.na</span>(crimes<span class="sc">$</span>hom_por_interv_policial)]</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">#mesmo comando na linguagem tidy usando filter( ) e pull( )</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>letalidadepolicial<span class="ot">&lt;-</span> crimes <span class="sc">%&gt;%</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(hom_por_interv_policial)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                     <span class="fu">pull</span>(hom_por_interv_policial)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div style="text-align:justify">
+<p>Agora geramos um vetor só para guardar os números de letalidade policial na série histórica, apenas nos anos em que foi feito o registro, isto é de 1998 em diante, por 343 meses. Vamos obter um resumo estatístico desses dados de duas formas. Uma, usando uma funções que nos dão como resultado valores das principais medidas. Outra, usando o gráfico conhecido como diagrama de caixa, ou boxplot.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Resumindo os dados de letalidade policial</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co">#Verificando tamanho do vetor</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(letalidadepolicial)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 343</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Sumário estatístico</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(letalidadepolicial)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  10.00   45.00   72.00   75.67  100.50  195.00 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Desvio-padrão</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(letalidadepolicial)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 37.7901</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Coeficiente de variação</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>cvar<span class="ot">&lt;-</span>(<span class="fu">sd</span>(letalidadepolicial)<span class="sc">/</span><span class="fu">mean</span>(letalidadepolicial))<span class="sc">*</span><span class="dv">100</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>cvar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 49.93838</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">boxplot</span>(letalidadepolicial, <span class="at">main=</span><span class="st">"Homicídios por Intervenção Policial"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Aula-02_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div style="text-align: justify">
+<p>O boxplot nos informa sobre a distribuição, variabilidade e presença de “outliers”, dando aspecto visual às medidas de resumo estatístico. Como os dados estão originalmente dispostos em série temporal, podemos aproveitar para fazer um gráfico que represente essa série. Por conveniência, vamos retornar ao dataframe original “crimes”, onde já estão as informações temporais.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Série temporal anual</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>letalidadeanual<span class="ot">&lt;-</span>crimes[<span class="dv">85</span><span class="sc">:</span><span class="dv">427</span>,] <span class="sc">%&gt;%</span>  <span class="co">#linhas selecionadas para não pegar nas</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">group_by</span>(ano) <span class="sc">%&gt;%</span>    <span class="co">#agrupa por ano, retirando as repetições</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">summarise</span>(<span class="at">registros =</span> <span class="fu">sum</span>(hom_por_interv_policial, <span class="at">na.rm=</span><span class="cn">TRUE</span>)) <span class="co">#mantém apenas o crime de interesse e soma os registros</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>ano<span class="ot">&lt;-</span><span class="dv">1998</span><span class="sc">:</span><span class="dv">2026</span> <span class="co">#criando nosso eixo x</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(ano,letalidadeanual<span class="sc">$</span>registros,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>                          <span class="at">type=</span><span class="st">"l"</span>, </span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>                          <span class="at">col=</span><span class="st">"red"</span>, </span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>     <span class="at">xlab=</span><span class="st">"Homicídios Registrados"</span>,</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>     <span class="at">ylab=</span><span class="st">"Ano"</span>,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>     <span class="at">main=</span><span class="st">"Homicídios por intervenção policial"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Aula-02_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="exercício" class="level3">
+<h3 class="anchored" data-anchor-id="exercício">Exercício</h3>
+<div style="text-align:justify">
+<p>Escolha outro crime do conjunto de dados. Tomando cuidado com os valores faltantes, realize as mesmas analises anteriores com os gráficos.</p>
+</div>
+</section>
+</section>
+<section id="verificando-associações" class="level2">
+<h2 class="anchored" data-anchor-id="verificando-associações">3. Verificando Associações</h2>
+<div style="text-align:justify">
+<p>Um dos aspectos mais importantes da análise de dados é verificar relações entre as variáveis, que podem nos dar pistas sobre o comportamento de uma em função da outra. Como nosso objetivo não é tratar de análises mais complexas, inferência ou modelos estatísticos, vamos apenas exemplificar maneiras de testar se duas ou mais variáveis possuem ou não associação.</p>
+<p>Comecemos com o nosso mesmo conjunto de dados. Vamos testar a relação entre o crime de homicídio e o crime de roubo, duas variáveis quantitativas. Podemos realizar o teste de correlação de Pearson, que demanda algum tipo de interpretação. Para isso, rode o script e cole o resultado que aparecer no console.</p>
+<p>Depois siga executando para executar o gráfico proposto. Vamos discutir esses resultados em seu aspecto estatístico.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Teste de correlação de Pearson</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(crimes<span class="sc">$</span>hom_doloso, crimes<span class="sc">$</span>total_roubos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's product-moment correlation
+
+data:  crimes$hom_doloso and crimes$total_roubos
+t = -8.2406, df = 425, p-value = 2.147e-15
+alternative hypothesis: true correlation is not equal to 0
+95 percent confidence interval:
+ -0.4502126 -0.2863616
+sample estimates:
+       cor 
+-0.3711728 </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Diagrama de Dispersão (Scatterplot)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(crimes<span class="sc">$</span>hom_doloso, crimes<span class="sc">$</span>total_roubos) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Aula-02_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Mesmo gráfico com o ggplot, mais bonito</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span> crimes) <span class="sc">+</span>                             <span class="co">#fonte dos dados</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>     <span class="fu">geom_point</span>(</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">mapping=</span><span class="fu">aes</span>(<span class="at">x=</span>hom_doloso, <span class="at">y=</span>total_roubos),   <span class="co">#valores dos eixos</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>       <span class="at">color=</span><span class="st">"blue"</span>) <span class="sc">+</span>                              <span class="co">#cor dos pontos</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>       <span class="fu">labs</span>(                                        <span class="co">#Rótulos dos eixos</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">x=</span> <span class="st">"Homicídios Dolosos"</span>,</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">y=</span> <span class="st">"Roubos"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Aula-02_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div style="text-align:justify">
+<p>Vamos agora explorar outro conjunto de dados, buscando verificar associações entre variáveis categóricas ou entre variáveis categóricas e numéricas. Utilizaremos os metadados de 149 ações penais dos atos antidemocráticos de 8 de janeiro de 2023, julgados pelo STF. Como esses dados estão em uma planilha de excel, precisaremos de um pacote que lê arquivos de excel chamado “readxl”. Instale o pacote no R usando “install.packages( )”. Feita a instalação, chame o pacote com library(readxl) e vamos ler o arquivo.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Conjunto de Dados do 8 de Janeiro</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("readxl")</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>aps<span class="ot">&lt;-</span><span class="fu">read_xlsx</span>(<span class="st">"8jan23.xlsx"</span>)</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(aps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [149 × 17] (S3: tbl_df/tbl/data.frame)
+ $ n_ap              : chr [1:149] "1057" "1058" "1060" "1066" ...
+ $ sexo              : chr [1:149] "masculino" "feminino" "masculino" "masculino" ...
+ $ data_acordao      : chr [1:149] "2024-02-14" "2024-02-26" "2023-09-14" "2024-02-06" ...
+ $ orgao             : chr [1:149] "pleno" "pleno" "pleno" "pleno" ...
+ $ n_pag             : num [1:149] 220 208 403 229 205 239 219 100 236 207 ...
+ $ n_pag_voto_relator: num [1:149] 133 131 132 131 93 118 122 50 112 121 ...
+ $ resultado         : chr [1:149] "procedente" "procedente" "procedente" "procedente" ...
+ $ privacao_liberdade: num [1:149] 1 1 1 1 1 1 1 0 1 1 ...
+ $ multa             : num [1:149] 1 1 1 1 1 1 1 1 1 1 ...
+ $ indenizacao       : num [1:149] 1 1 1 1 1 1 1 1 1 1 ...
+ $ divergencia       : num [1:149] 1 1 1 1 1 1 1 1 1 1 ...
+ $ ressalva          : num [1:149] 0 0 0 0 0 0 0 0 1 0 ...
+ $ tempo_pena        : num [1:149] 198 198 204 198 162 198 168 12 168 198 ...
+ $ obs               : chr [1:149] NA NA "notas da sessão" NA ...
+ $ Ementa            : chr [1:149] NA NA NA NA ...
+ $ topico            : num [1:149] 3 3 3 1 1 1 1 2 3 3 ...
+ $ rotulo            : chr [1:149] "Forma de execução dos crimes e cicunstâncias individuais" "Forma de execução dos crimes e cicunstâncias individuais" "Forma de execução dos crimes e cicunstâncias individuais" "Contexto fático crimes graves" ...</code></pre>
+</div>
+</div>
+<div style="text-alig:justify">
+<p>Notamos que as variáveis são lidas pelo R ou como numéricas, ou como caracteres, muito embora saibamos que algumas delas, como “resultado” e “privacao_liberdade” são categorias com um ou mais níveis. No caso de “privacao_liberdade”, por exemplo, usamos números naturais, que é uma forma boa para indicar fatores no R, pois facilita contagens e pode ser importante em alguns modelos como a regressão logística (que não vamos abordar aqui).</p>
+<p>Neste exemplo, vamos testar primeiramente se existe uma associação entre o gênero do acusado e o tipo de pena que foi imposta. Para fazê-lo, vamos primeiro criar uma tabela de dupla entrada ou de contingência. Em seguida, vamos fazer um gráfico para começar a explorar a associação.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Verificando associação entre tipo de pena e genero</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="co">#tabela de frequências</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>tabela<span class="ot">&lt;-</span> <span class="fu">table</span>(aps<span class="sc">$</span>sexo, aps<span class="sc">$</span>privacao_liberdade)</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="fu">addmargins</span>(tabela)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+              0   1 Sum
+  feminino   28  22  50
+  masculino  55  44  99
+  Sum        83  66 149</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tabela)<span class="ot">&lt;-</span><span class="fu">c</span>(<span class="st">"Liberdade"</span>, <span class="st">"Prisão"</span>)         </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">#tabela de proporções</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>tabprop<span class="ot">&lt;-</span><span class="fu">round</span>(<span class="fu">prop.table</span>(tabela,<span class="dv">1</span>)<span class="sc">*</span><span class="dv">100</span>,<span class="dv">1</span>) <span class="co">#calcular as proporções por linha e arredondar p 1 casa decimal</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>tabprop</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            Liberdade Prisão
+  feminino       56.0   44.0
+  masculino      55.6   44.4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">addmargins</span>(tabprop,<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>           
+            Liberdade Prisão   Sum
+  feminino       56.0   44.0 100.0
+  masculino      55.6   44.4 100.0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Gráfico de Barras das Proproporções</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">barplot</span>(<span class="fu">t</span>(tabprop), <span class="co">#linhas em colunas</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>        <span class="at">xlab=</span><span class="st">"Gênero"</span>, <span class="at">ylab=</span><span class="st">"Porcentagem"</span>,</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">axes=</span>F, <span class="co">#não desenha automaticamente os eixos</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>        <span class="at">col=</span><span class="fu">c</span>(<span class="st">"blue"</span>,<span class="st">"green"</span>), </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">ylim=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">130</span>)) <span class="co">#definir o limite do eixo y</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="fu">axis</span>(<span class="dv">2</span>, <span class="at">at=</span><span class="fu">seq</span>(<span class="dv">0</span>,<span class="dv">100</span>,<span class="dv">20</span>)) <span class="co">#como o eixo y aparecerá</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topright"</span>,        <span class="co">#legenda do gráico</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">legend=</span><span class="fu">rev</span>(<span class="fu">colnames</span>(tabela)), </span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">fill=</span><span class="fu">rev</span>(<span class="fu">c</span>(<span class="st">"blue"</span>, <span class="st">"green"</span>)),</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex=</span><span class="fl">0.9</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Aula-02_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div style="text-align:justify">
+<p>Esse gráfico nos mostra que aparentemente não há qualquer associação, ou seja, as penas de privação de liberdade foram indistintamente aplicadas para homens e mulheres. Para confirmar essa evidência, podemos usar um teste de qui-quadrado, que nos ajuda a medir se as variáveis são indepentes.</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#teste qui-quadrado para nossa tabela de dupla-entrada</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(tabela)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Pearson's Chi-squared test with Yates' continuity correction
+
+data:  tabela
+X-squared = 1.0231e-30, df = 1, p-value = 1</code></pre>
+</div>
+</div>
+<div style="text-align:justify">
+<p>O teste de qui-quadrado confirma que as variáveis eram realmente independentes, não havendo qualquer evidência de associação entre elas. Contudo, outras associações podem ser exploradas.</p>
+<p>Durante a pesquisa com esses dados, observamos que os acórdãos e votos seguiam um padrão em termos de número de páginas, e buscamos mostrar que havia associação entre o tipo de sanção aplicada e a extensão dos votos. Isso ficou demonstrado pelo seguinte diagrama de dispersão (escrito para ggplot para facilitar a visualização:</p>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(aps, <span class="fu">aes</span>(<span class="at">x =</span> n_pag, <span class="at">y =</span> n_pag_voto_relator)) <span class="sc">+</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">fill =</span> <span class="fu">factor</span>(privacao_liberdade)), </span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">shape =</span> <span class="dv">21</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">size =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"0"</span> <span class="ot">=</span> <span class="st">"dodgerblue4"</span>, <span class="st">"1"</span> <span class="ot">=</span> <span class="st">"lightskyblue1"</span>)) <span class="sc">+</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Privação de Liberdade"</span>) <span class="sc">+</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Linhas dos eixos X e Y</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.line.x =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>),</span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.line.y =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"black"</span>, <span class="at">linewidth =</span> <span class="dv">1</span>),</span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Maior destaque nas linhas de grade (opcional)</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.major =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"gray80"</span>, <span class="at">linewidth =</span> <span class="fl">0.5</span>),</span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_line</span>(<span class="at">color =</span> <span class="st">"gray90"</span>, <span class="at">linewidth =</span> <span class="fl">0.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Aula-02_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="exercício-1" class="level3">
+<h3 class="anchored" data-anchor-id="exercício-1">Exercício</h3>
+<div style="text-align:justify">
+<p>Explore associação entre a variável tempo_pena e gênero.</p>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
